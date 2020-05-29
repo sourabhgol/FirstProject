@@ -92,15 +92,30 @@ export default class Signup extends Component<any, any> {
       formDetails.push(this.state.name)
       formDetails.push(this.state.email)
       formDetails.push(this.state.password)
-      var email = localStorage.getItem(this.state.email)
-      var name = localStorage.getItem(this.state.name)
-      if (name === null && email === null) {
-        localStorage.setItem(this.state.name, JSON.stringify(formDetails))
-        localStorage.setItem(this.state.email, JSON.stringify(formDetails))
+      var email = false,
+        name = false
+      if (localStorage.user) {
+        var Details = new Map(JSON.parse(localStorage.user))
+        email = Details.has(this.state.email)
+        name = Details.has(this.state.name)
+      }
+      if (!name && !email) {
+        var userDetails = localStorage.getItem('user')
+        if (userDetails) {
+          var Detail = new Map(JSON.parse(localStorage.user))
+          Detail.set(this.state.name, formDetails)
+          Detail.set(this.state.email, formDetails)
+          localStorage.user = JSON.stringify(Array.from(Detail.entries()))
+        } else {
+          var myMap = new Map()
+          myMap.set(this.state.name, formDetails)
+          myMap.set(this.state.email, formDetails)
+          localStorage.user = JSON.stringify(Array.from(myMap.entries()))
+        }
         this.props.updateParent()
         localStorage.setItem('token', this.state.email)
         history.push('/dashboard')
-      } else if (name !== null) {
+      } else if (name) {
         this.setState({ nameError: 'Name alerady exists' })
       } else {
         this.setState({ emailError: 'Email already exists' })
