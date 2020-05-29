@@ -8,17 +8,33 @@ class Dashboard extends Component<any, any> {
     localStorage.removeItem('token')
     history.push('/')
   }
-
+  handleDelete = () => {
+    var user_Email = localStorage.getItem('token')
+    var Details = new Map(JSON.parse(localStorage.user))
+    var a: any = Details.get(user_Email)
+    Details.delete(a[0])
+    Details.delete(a[1])
+    localStorage.user = JSON.stringify(Array.from(Details.entries()))
+    localStorage.removeItem('token')
+    history.push('/')
+  }
   render() {
+    var parseduserDetails: any
     var userEmail = localStorage.getItem('token')
     if (userEmail) {
-      var userDetails = localStorage.getItem(userEmail)
-      var parseduserDetails
-      if (userDetails) {
-        parseduserDetails = JSON.parse(userDetails)
+      var Detail = new Map(JSON.parse(localStorage.user))
+      var a = Detail.has(userEmail)
+      if (a) {
+        parseduserDetails = Detail.get(userEmail)
       }
       return (
         <div>
+          <Button
+            className="dashboardButton btn btn-danger"
+            onClick={this.handleDelete}
+          >
+            Delete Account
+          </Button>
           <Button
             className="dashboardButton btn btn-dark"
             onClick={this.handleChange}
