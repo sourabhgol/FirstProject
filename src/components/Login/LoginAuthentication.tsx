@@ -33,22 +33,28 @@ export default class Login extends Component<any, any> {
       this.setState({ passwordError: 'Password Required' })
       this.setState({ emailError: '' })
     } else {
-      var userDetails = localStorage.getItem(this.state.email)
-      if (userDetails) {
-        var parsed_user_Details = JSON.parse(userDetails)
-        if (
-          parsed_user_Details[1] === this.state.email &&
-          parsed_user_Details[2] === this.state.password
-        ) {
-          localStorage.setItem('token', this.state.email)
-          this.props.updateParent()
-          history.push('/dashboard')
-        } else if (parsed_user_Details[1] !== this.state.email) {
+      if (localStorage.user) {
+        var Detail = new Map(JSON.parse(localStorage.user))
+        var userDetails = Detail.has(this.state.email)
+        if (userDetails) {
+          var parsed_user_Details: any = Detail.get(this.state.email)
+          if (
+            parsed_user_Details[1] === this.state.email &&
+            parsed_user_Details[2] === this.state.password
+          ) {
+            localStorage.setItem('token', this.state.email)
+            this.props.updateParent()
+            history.push('/dashboard')
+          } else if (parsed_user_Details[1] !== this.state.email) {
+            this.setState({ emailError: 'Email not exists' })
+            this.setState({ passwordError: '' })
+          } else {
+            this.setState({ passwordError: 'Wrong Password' })
+            this.setState({ emailError: '' })
+          }
+        } else {
           this.setState({ emailError: 'Email not exists' })
           this.setState({ passwordError: '' })
-        } else {
-          this.setState({ passwordError: 'Wrong Password' })
-          this.setState({ emailError: '' })
         }
       } else {
         this.setState({ emailError: 'Email not exists' })
